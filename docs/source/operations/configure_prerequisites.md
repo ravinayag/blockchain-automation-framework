@@ -55,15 +55,13 @@ Build the Corda node image from **platforms/r3-corda/images** by following [thes
 Hashicorp Vault is one of the pre-requisites for the Blockchain Automation Framework. If not initialised and unsealed already, complete the following steps to unseal and access the Vault.
 
 * Install Vault client. Follow the instructions on [Install Vault](https://www.vaultproject.io/docs/install/).
+## Need proper documentation 
+* Setup and Run the vault in the backround  [vault Ref](https://www.vaultproject.io/intro/getting-started/dev-server.html).
 
-* Set the environment Variable **VAULT_ADDR** to the Vault service. Note that this service should be accessible from the host where you are running this command from, as well as the Ansible controller and the Kubernetes nodes.
 ```
-export VAULT_ADDR=http://my-vault-server:9000
+$vault server -dev &
 ```
-* Now execute the following:
-```
-vault operator init -key-shares=1 -key-threshold=1
-```
+
 It will give following output:
 ```
 Unseal Key 1: << unseal key>>
@@ -71,6 +69,16 @@ Unseal Key 1: << unseal key>>
 Initial Root Token: << root token>>
 ```
 Save the root token  and unseal key in a secure location. This root token is to be updated in the Blockchain Automation Framework's network.yaml file before running the Ansible playbook(s) to deploy the DLT network.
+
+* Set the environment Variable **VAULT_ADDR** to the Vault service. Note that this service should be accessible from the host where you are running this command from, as well as the Ansible controller and the Kubernetes nodes.
+
+```
+export VAULT_ADDR=http://my-vault-server:9000
+```
+* Now execute the following:
+```
+vault operator init -key-shares=1 -key-threshold=1
+```
 
 * Unseal with the following command:
 ```
@@ -89,6 +97,10 @@ You may generate multiple root tokens at the time of initialising the Vault, and
 The Blockchain Automation Framework uses [Ambassador](https://www.getambassador.io/about/why-ambassador/) for inter-cluster communication. To enable the Blockchain Automation Framework Kubernetes services from one Kubernetes cluster to talk to services in another cluster, Ambassador needs to be configured as per the following steps:
 
 * After Ambassador is deployed on the cluster (manually or using `platforms/shared/configuration/kubernetes-env-setup.yaml` playbook), get the external IP address of the Ambassador service.
+
+ensure your kubectl is running if not start the services.  
+$ kubectl start
+
 ```
 kubectl get services -o wide
 ```
